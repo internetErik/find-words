@@ -4,29 +4,8 @@ var fs = require('fs');
 let args = process.argv.slice(2);
 
 let directory = './';
-let words = [
-  'ELO_ELOCTATEInstructions_for_use.pdf',
-  'ELO-US-0496-Spanish-IFU.pdf',
-  'elo-us-1208-doctor-discussion-guide-for-website.pdf',
-  'ELO-US-1213-ELOCTATE-Free-Trial-Plus-Form-Electronic(HCP-Version)-BIVV.pdf',
-  'ELO-US-1474-ELOCTATE-Consent-Authorization-Form-Print-BIVV.pdf',
-  'ELO-US-1503-MyELOCTATE-General-Enrollment-Form-Web-BIVV.pdf',
-  'ELOConversationStarterGuide-Digital.pdf',
-  'Eloctate Reconstitution Video.pdf',
-  'ELOCTATE_PI_January2017.pdf',
-  'ELOCTATE_PI.pdf',
-  'eloctate-count-on-prospect-brochure-spanish.pdf',
-  'ELOCTATE-digital-quick-guide-spanish.pdf',
-  'Eloctate-Financial-Services-Brochure-Digital-Spanish.pdf',
-  'eloctateinstructions-for-use_09.19.pdf',
-  'ELODigitalCountOnQuickGuide.pdf',
-  'HCP.pdf',
-  'HEM-US-6194-SanofiGenzyme-Enrollment-Form.pdf',
-  'sano-9007_patient-enrollment-form__v4_live6_10_19.pdf',
-];
-let extensions = [
-  '.aspx'
-];
+let words = [];
+let extensions = [];
 let ignores = [
   'node_modules',
   '.git',
@@ -87,11 +66,11 @@ if(args.includes('--ignores')) {
   args.splice(index, ignores.length+1);
 }
 
-console.log('post args', args);
-console.log('directory', directory);
-console.log('words', words)
-console.log('extensions', extensions)
-console.log('ignores', ignores)
+// console.log('post args', args);
+console.log('searching:', directory);
+console.log('only checking files with extensions:', extensions.length > 0 ? extensions : 'all');
+console.log('looking for words:', words)
+console.log('ignoring directories:', ignores.length > 0 ? ignores : 'none');
 
 // make sure there is a / at the end of the directory
 if(directory && directory[directory.length - 1] !== '/') directory += '/';
@@ -133,9 +112,10 @@ const readFiles = (dirname, onFileContent, onError) => new Promise((resolve, rej
 
 readFiles(directory, (filename, content) => data.push(content), (err) => { throw err })
 .then(() => {
-  const result = words.map(TEXT => TEXT.toLowerCase())
-    .filter(
-      text => data.reduce((acc, content) => acc ? acc : content.toLowerCase().includes(text), false)
-    )
-  console.log('found instances of:', result);
+  words = words.map(WORD => WORD.toLowerCase());
+  const foundWords =
+    words.filter(text => data.reduce((acc, content) => acc ? acc : content.toLowerCase().includes(text), false))
+  const notFoundWords = words.filter(word => !foundWords.includes(word.toLowerCase()))
+  console.log(`found instances of:`, foundWords);
+  console.log(`didn't find instances of:`, notFoundWords);
 });
