@@ -1,5 +1,5 @@
-const { dir } = require('console');
-var fs = require('fs');
+const fs = require('fs');
+const path = require('path');
 
 let args = process.argv.slice(2);
 
@@ -88,8 +88,9 @@ const readFiles = (dirname, onFileContent, onError) => new Promise((resolve, rej
       : [ [ ...files, name ], dirs ]
     , [[], []]);
 
+    // filter out files that don't have the right extension
     if(extensions.length > 0) 
-    files = files.filter(file => extensions.reduce((acc, ext) => acc ? acc : file.indexOf(ext) !== -1, false))
+      files = files.filter(file => extensions.includes(path.extname(file)));
 
     let promises = files.map(name => new Promise((resolve, reject) => {
       fs.readFile(`${dirname}/${name}`, 'utf-8', (err, content) => {

@@ -26,6 +26,8 @@ If no directory is specified it defaults to './'
 -- ignores list of ignored folders
 ```
 
+If you don't want to provide arguments you can just hardcode values into `index.js`
+
 Examples
 
 ```
