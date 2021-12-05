@@ -30,7 +30,9 @@ const processExtensions = argProcessorFactory('-e', '--extensions', genericMulti
 const processIgnores = argProcessorFactory('-i', '--ignores', genericMultiArgProcessor)
 const processRecursive = argProcessorFactory('-r', '--recursive', (args, flag) => true)
 const processCaseSensitive = argProcessorFactory('-c', '--case-sensitive', (args, flag) => true)
-const defaultDirectory = './';
+
+// default values
+const defaultDirectory = './'; // relative to where you run the script from
 const defaultWords = [];
 const defaultExtensions = [];
 const defaultIgnores = [
@@ -39,8 +41,7 @@ const defaultIgnores = [
 ];
 const defaultRecursive = false;
 const defaultCaseSensitive = false;
-
-const data = [];
+// end default values
 
 // get directory out of args
 let directory = processDirectory(args) || defaultDirectory;
@@ -56,10 +57,12 @@ if (directory && directory[directory.length - 1] !== '/') directory += '/';
 if(caseSensitive)
   words = words.map(word => word.toLowerCase());
 
-console.log('searching:', directory, `(${ recursive ? '' : 'not'} recursively)`);
-console.log('only checking files with extensions:', extensions.length > 0 ? extensions : 'all');
-console.log('looking for words:', words, `(Case-${ caseSensitive ? 'S' : 'Ins' }ensitive)`)
-console.log('ignoring directories:', ignores.length > 0 ? ignores : 'none');
+console.log(`
+  Searching: ${ directory } (${ recursive ? '' : 'Not '}Recursively)
+  Only checking files with extensions: ${extensions.length > 0 ? extensions.join(', ') : 'all'}
+  Looking for words: ${ words } (Case-${ caseSensitive ? 'S' : 'Ins' }ensitive)
+  Ignoring directories: ${ignores.length > 0 ? ignores.join(', ') : 'none'}
+`);
 
 const readFiles = (dirname, onFileContent, onError) => new Promise((resolve, reject) => {
   fs.readdir(dirname, (err, filenames) => {
@@ -103,6 +106,7 @@ const readFiles = (dirname, onFileContent, onError) => new Promise((resolve, rej
   });
 })
 
+const data = [];
 readFiles(directory, (filename, content) => data.push(content), (err) => { throw err })
 .then(() => {
   const filterFn = caseSensitive
