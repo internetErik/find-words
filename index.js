@@ -28,8 +28,9 @@ const processDirectory = argProcessorFactory('-d', '--directory', genericSingleA
 const processWords = argProcessorFactory('-w', '--words', genericMultiArgProcessor)
 const processExtensions = argProcessorFactory('-e', '--extensions', genericMultiArgProcessor)
 const processIgnores = argProcessorFactory('-i', '--ignores', genericMultiArgProcessor)
-const processRecursive = argProcessorFactory('-r', '--recursive', (args, flag) => true)
-const processCaseSensitive = argProcessorFactory('-c', '--case-sensitive', (args, flag) => true)
+const processRecursive = argProcessorFactory('-r', '--recursive', () => true)
+const processCaseSensitive = argProcessorFactory('-c', '--case-sensitive', () => true)
+const processRegExp = argProcessorFactory('-x', '--reg-exp', () => true)
 
 // default values
 const defaultDirectory = './'; // relative to where you run the script from
@@ -41,6 +42,7 @@ const defaultIgnores = [
 ];
 const defaultRecursive = false;
 const defaultCaseSensitive = false;
+const defaultRegExp = false;
 // end default values
 
 // get directory out of args
@@ -50,17 +52,21 @@ const extensions = processExtensions(args) || defaultExtensions;
 const ignores = processIgnores(args) || defaultIgnores;
 const recursive = processRecursive(args) || defaultRecursive;
 const caseSensitive = processCaseSensitive(args) || defaultCaseSensitive;
+const regExp = processRegExp(args) || defaultRegExp;
 
 // make sure there is a / at the end of the directory
 if (directory && directory[directory.length - 1] !== '/') directory += '/';
 
-if(caseSensitive)
+if(!caseSensitive)
   words = words.map(word => word.toLowerCase());
+
+if(regExp)
+  words = words.map(word => RegExp(word, `g${ caseSensitive ? '' : 'i'}`))
 
 console.log(`
   Searching: ${ directory } (${ recursive ? '' : 'Not '}Recursively)
   Only checking files with extensions: ${extensions.length > 0 ? extensions.join(', ') : 'all'}
-  Looking for words: ${ words } (Case-${ caseSensitive ? 'S' : 'Ins' }ensitive)
+  Looking for words: ${ words.join(', ') } (Case-${ caseSensitive ? 'S' : 'Ins' }ensitive)
   Ignoring directories: ${ignores.length > 0 ? ignores.join(', ') : 'none'}
 `);
 
@@ -107,13 +113,22 @@ const readFiles = (dirname, onFileContent, onError) => new Promise((resolve, rej
 })
 
 const data = [];
-readFiles(directory, (filename, content) => data.push(content), (err) => { throw err })
+readFiles(
+  directory,
+  (filename, content) => data.push(content),
+  (err) => { throw err }
+)
 .then(() => {
-  const filterFn = caseSensitive
-    ? text => data.reduce((acc, content) => acc ? acc : content.toLowerCase().includes(text), false)
-    : text => data.reduce((acc, content) => acc ? acc : content.includes(text), false)
+  const testForWords = (content, word) => (
+      regExp        ? !!content.match(word)
+    : caseSensitive ? content.includes(word)
+    : content.toLowerCase(word)
+  )
+
+  const filterFn =
+    word => data.reduce((acc, content) => acc ? acc : testForWords(content, word), false)
   const foundWords = words.filter(filterFn)
-  const notFoundWords = words.filter(word => !foundWords.includes(word.toLowerCase()))
+  const notFoundWords = words.filter(word => !filterFn(word))
   console.log(`found instances of:`, foundWords);
   console.log(`didn't find instances of:`, notFoundWords);
 });

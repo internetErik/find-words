@@ -68,24 +68,33 @@ If you want the check to be case sensitive:
 -c
 --case-sensitive
 
+If you want words to be interpreted as Regular Expressions
+-x
+-reg-exp
+  * Note: do not include your own opening and closing slashed ('/') *
+  * Note: the global flag will always be included *
+
 ```
 
 
 ### Examples
 
 ```
-node ./find-words -d ./files/ -w TEST WORDS -e .js .html -i node_modules .git -r -c
+$ node ./find-words -d ./test/ -w hello world -e .txt .dat -i node_modules .git -r -c
 
-  Searching: ./files/ (Recursively)
-  Only checking files with extensions: .js, .html
-  Looking for words: test,words (Case-Sensitive)
+  Searching: ./test/ (Recursively)
+  Only checking files with extensions: .txt, .dat
+  Looking for words: hello, world (Case-Sensitive)
   Ignoring directories: node_modules, .git
+
+found instances of: [ 'hello', 'world' ]
+didn't find instances of: []
 
 ```
 
 ## ToDo
 
-* Support for regex instead of words
-  * Output will just be what was found, since we cannot list all that is not found
+* Also find which files the text was (not)found in
 * Support glob paths
   * Write yourself? Use <a href="https://github.com/isaacs/node-glob" target="_blank">node-glob</a>?
+
