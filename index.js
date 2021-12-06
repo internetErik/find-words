@@ -1,29 +1,12 @@
 const fs = require('fs');
 const path = require('path');
+const {
+  argProcessorFactory,
+  genericSingleArgProcessor,
+  genericMultiArgProcessor
+} = require('./util');
 
-let args = process.argv.slice(2);
-
-const argProcessorFactory = (short, long, processor) => args => (
-  (args.includes(short)) ? processor(args, short)
-: (args.includes(long))  ? processor(args, long)
-: null
-)
-
-const genericSingleArgProcessor = (args, flag) => {
-  const index = args.indexOf(flag);
-  const result = args[index + 1];
-  args.splice(index, 2);
-  return result;
-}
-
-const genericMultiArgProcessor = (args, flag) => {
-  const index = args.indexOf(flag);
-  const endIndex = args.slice(index + 1).reduce((acc, arg, i) => acc !== -1 ? acc : (arg.indexOf('-') === 0 ? i : -1), -1)
-  const result = args.slice(index + 1, endIndex === -1 ? args.length : endIndex + 1);
-  args.splice(index, result.length + 1);
-  return result;
-}
-
+// setup all our handlers for flags
 const processDirectory = argProcessorFactory('-d', '--directory', genericSingleArgProcessor)
 const processWords = argProcessorFactory('-w', '--words', genericMultiArgProcessor)
 const processExtensions = argProcessorFactory('-e', '--extensions', genericMultiArgProcessor)
@@ -44,6 +27,9 @@ const defaultRecursive = false;
 const defaultCaseSensitive = false;
 const defaultRegExp = false;
 // end default values
+
+// get the command line args
+let args = process.argv.slice(2);
 
 // get directory out of args
 let directory = processDirectory(args) || defaultDirectory;
