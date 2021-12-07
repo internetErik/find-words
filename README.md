@@ -10,8 +10,12 @@ If you have any suggestions open an issue or make a pull request with the change
 
 ## ToDo
 
+* Show line numbers where words show up in each file
+  * `<filename> [<line>, <line>]`
+  * split files on `\n` and search each line one at a time
 * Generate more examples (these should also be seen as tests)
-* Modify so there is a core that can be used for a gulp/webpack plugin
+* Modify so there is a core that can be used for a `gulp`/`webpack` plugin
+* Refactor to use more `async`/`await`
 
 ## Use
 

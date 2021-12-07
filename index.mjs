@@ -4,7 +4,6 @@ import path  from 'path';
 import {
   multiArgNoFlag,
   argProcessorFactory,
-  genericSingleArgProcessor,
   genericMultiArgProcessor
 } from './util/index.mjs';
 
@@ -64,7 +63,7 @@ console.log(`
 `);
 
 const readFiles = (filepaths, onFileContent, onError) => new Promise((resolve, reject) => {
-  const promises = filepaths.map(async filepath => new Promise((resolve, reject) => {
+  const promises = filepaths.map(filepath => new Promise((resolve, reject) => {
     // if this is a directory, then we have a lot more work to do
     if(fs.statSync(filepath).isDirectory()) {
       fs.readdir(filepath, (err, filenames) => {
