@@ -11,13 +11,13 @@ Clone this repository to a convenient location. This is recommended since you ma
 Finally, run it using `node`:
 
 ```
-node ./find-words <arguments>
+$ node ./find-words <arguments>
 ```
 
 After cloning you may want to rename the folder to something convenient like `fw`, then you can run it like so:
 
 ```
-node ./fw <arguments>
+$ node ./fw <arguments>
 ```
 
 So, say you have these folders:
@@ -32,7 +32,14 @@ projects
 If you want to search `some-project`, then `cd` into `some-project` and run:
 
 ```
-node ../find-words <arguments>
+$ node ../find-words <arguments>
+```
+
+Another tip: Sometimes the output can get long. In that case, you may want to output it to a file.
+
+```
+$ node ../find-words <arguments> > results
+$ cat results
 ```
 
 ### Arguments
