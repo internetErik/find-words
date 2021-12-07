@@ -1,0 +1,22 @@
+#!zsh
+echo "These are all run from the root of the \`find-words\` project directory"
+echo "\`\`\`"
+echo "$ node ./index.js ./test-dir/ -w sdfs hello world blah -e .txt .dat -i node_modules .git -r -c"
+node ./index.js ./test-dir/ -w sdfs hello world blah -e .txt .dat -i node_modules .git -r -c
+echo "\`\`\`"
+
+echo "\`\`\`"
+echo "$ node ./index.js ./test/**/*.dat -w 1 3"
+node ./index.js ./test-dir/**/*.dat -w 1 3
+echo "\`\`\`"
+
+echo "\`\`\`"
+echo "$ node ./index.js ./test-dir/** -w '[0-9]' -x"
+node ./index.js ./test-dir/** -w '[0-9]' -x
+echo "\`\`\`"
+
+echo "Find only w20 and not w200, etc"
+echo "\`\`\`"
+echo "$ node ./index.js ./test-dir/**/*.html -w 'w20( |\")' -x"
+node ./index.js ./test-dir/**/*.html -w 'w20( |\")' -x
+echo "\`\`\`"
