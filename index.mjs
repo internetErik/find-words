@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
-const {
+import fs from 'fs';
+import path  from 'path';
+import {
   multiArgNoFlag,
   argProcessorFactory,
   genericSingleArgProcessor,
   genericMultiArgProcessor
-} = require('./util');
+} from './util/index.mjs';
 
 // setup all our handlers for flags
 const processWords = argProcessorFactory('-w', '--words', genericMultiArgProcessor)
@@ -35,7 +35,7 @@ let filepaths = multiArgNoFlag(args);
 
 if(filepaths.length === 0) {
   console.log('you must provide a directory');
-  return;
+  process.exit()
 }
 
 // remove final slash from all directory filepaths
@@ -128,35 +128,34 @@ const readFiles = (filepaths, onFileContent, onError) => new Promise((resolve, r
 })
 
 const data = [];
-readFiles(
+await readFiles(
   filepaths,
   (filepath, content) => data.push({ filepath, content }),
   err => console.trace(err) 
 )
-.then(() => {
-  // test for a match differently based on flags set
-  const testForWords = (content, word) => (
-      regExp        ? !!content.match(word)
-    : caseSensitive ? content.includes(word)
-    : content.toLowerCase().includes(word)
-  )
 
-  // for mapping over all words
-  // searches in each file. If found in the file, adds it to the array
-  // string => { string, [ string ]}
-  const mapFn =
-    word => ({
-      word,
-      foundIn : data.reduce((acc, { filepath, content }) => [...acc, ...(testForWords(content, word) ? [filepath] : [])], []),
-    })
+// test for a match differently based on flags set
+const testForWords = (content, word) => (
+    regExp        ? !!content.match(word)
+  : caseSensitive ? content.includes(word)
+  : content.toLowerCase().includes(word)
+)
 
-  const results = words
-  .map(mapFn)
-  .sort((a, b) => b.foundIn.length - a.foundIn.length);
-  // print output
-  console.log(`
+// for mapping over all words
+// searches in each file. If found in the file, adds it to the array
+// string => { string, [ string ]}
+const mapFn =
+  word => ({
+    word,
+    foundIn : data.reduce((acc, { filepath, content }) => [...acc, ...(testForWords(content, word) ? [filepath] : [])], []),
+  })
+
+const results = words
+.map(mapFn)
+.sort((a, b) => b.foundIn.length - a.foundIn.length);
+// print output
+console.log(`
 Results: ${ results.map(({ word, foundIn }) => `
   ${ regExp ? word : `'${word}'` } ${ foundIn.length > 0 ? 'found in files:' : 'not found'}
     ${ [...new Set(foundIn)].join('\n    ') }`).join('\n  ')}
 `)
-});

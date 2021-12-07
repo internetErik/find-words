@@ -62,7 +62,7 @@ $ cat results
 
 ### Arguments
 
-It can be a hastle to use the arguments, so you may just want to modify the default values in `find-words/index.js`. Look for the comments:
+It can be a hastle to use the arguments, so you may just want to modify the default values in `find-words/index.mjs`. Look for the comments:
 
 ```JavaScript
 // default values
@@ -106,7 +106,7 @@ Do this by running `./gen-examples` (requires `zsh` is in `$PATH`)
 ****** Generated Below Here *******
 These are all run from the root of the `find-words` project directory
 ```
-$ node ./index.js ./test-dir/ -w sdfs hello world blah -e .txt .dat -i node_modules .git -r -c
+$ node ./index.mjs ./test-dir/ -w sdfs hello world blah -e .txt .dat -i node_modules .git -r -c
 
   Searching: ./test-dir (Recursively)
   Only checking files with extensions: .txt, .dat
@@ -129,7 +129,7 @@ Results:
 
 ```
 ```
-$ node ./index.js ./test/**/*.dat -w 1 3
+$ node ./index.mjs ./test/**/*.dat -w 1 3
 
   Searching: ./test-dir/data.dat (Not Recursively)
   Only checking files with extensions: all
@@ -146,7 +146,7 @@ Results:
 
 ```
 ```
-$ node ./index.js ./test-dir/** -w '[0-9]' -x
+$ node ./index.mjs ./test-dir/** -w '[0-9]' -x
 
   Searching: ./test-dir/data.dat,./test-dir/empty-folder,./test-dir/hello.txt,./test-dir/hello2.txt,./test-dir/html,./test-dir/node_modules,./test-dir/test2 (Not Recursively)
   Only checking files with extensions: all
@@ -158,13 +158,13 @@ Results:
   /[0-9]/gi found in files:
     ./test-dir/data.dat
     ./test-dir/test2/test.txt
-    ./test-dir/html/index.html
     ./test-dir/html/other.html
+    ./test-dir/html/index.html
 
 ```
 Find only w20 and not w200, etc
 ```
-$ node ./index.js ./test-dir/**/*.html -w 'w20( |")' -x
+$ node ./index.mjs ./test-dir/**/*.html -w 'w20( |")' -x
 
   Searching: ./test-dir/html/index.html,./test-dir/html/other.html (Not Recursively)
   Only checking files with extensions: all
