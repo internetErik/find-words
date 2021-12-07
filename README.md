@@ -1,8 +1,12 @@
-## find-words
+# find-words
 
-Run this to search files in a directory (and sub-directories) with a list of words. It will respond with a which of those words were found in use and which were not in use. You can use this information for whatever you want.
+Run this to search files in a directory (and sub-directories) with a list of words. It will respond with a which of those words were found and what files they were found in (also if they weren't found). You can use this information for whatever you want.
+
+Who knows, maybe you don't know `grep` or just want something that can specifically do this with some convenient formatting without writing a script.
 
 I think of this as something to use with my <a href="https://github.com/internetErik/atomic-scss" target="_blank">atomic-scss</a> so I can find unused classes, however I wrote a different version of this to help someone answer the question, "is this static asset being used anywhere?"
+
+If you have any suggestions open an issue or make a pull request with the change.
 
 ## Use
 
@@ -77,7 +81,7 @@ If you want the check to be case sensitive:
 
 If you want words to be interpreted as Regular Expressions
 -x
--reg-exp
+--reg-exp
   * Note: do not include your own opening and closing slashed ('/') *
   * Note: the global flag will always be included *
 
@@ -106,12 +110,16 @@ Results:
 
 
   'blah' not found
-
 ```
 
 ## ToDo
 
-* Support glob paths
-  * Write yourself? Use <a href="https://github.com/isaacs/node-glob" target="_blank">node-glob</a>?
+* Support glob paths as alternative to directory (and extension?)
+  * -g --glob
+  * simple version: ./some/path/**/*.ext
+    * directory = /some/path, recursive, and limits extension
+  * Use <a href="https://github.com/isaacs/node-glob" target="_blank">node-glob</a>?
+* More things in test directory
+* More examples, specifically for atomic-scss
 * Modify so there is a core that can be used for a gulp/webpack plugin
 
