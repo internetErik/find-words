@@ -80,21 +80,30 @@ If you want words to be interpreted as Regular Expressions
 ### Examples
 
 ```
-$ node ./find-words -d ./test/ -w hello world -e .txt .dat -i node_modules .git -r -c
+$ node ./index.js -d ./test/ -w sdfs hello world blah -e .txt .dat -i node_modules .git -r -c
 
   Searching: ./test/ (Recursively)
   Only checking files with extensions: .txt, .dat
-  Looking for words: hello, world (Case-Sensitive)
+  Looking for words: sdfs, hello, world, blah (Case-Sensitive)
   Ignoring directories: node_modules, .git
 
-found instances of: [ 'hello', 'world' ]
-didn't find instances of: []
+
+Results:
+  'hello' found in files:
+    ./test/hello.txt
+
+  'world' found in files:
+    ./test/hello.txt
+
+  'sdfs' not found
+
+
+  'blah' not found
 
 ```
 
 ## ToDo
 
-* Also find which files the text was (not)found in
 * Support glob paths
   * Write yourself? Use <a href="https://github.com/isaacs/node-glob" target="_blank">node-glob</a>?
 

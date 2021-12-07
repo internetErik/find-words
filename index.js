@@ -74,12 +74,12 @@ const readFiles = (dirname, onFileContent, onError) => new Promise((resolve, rej
       files = files.filter(file => extensions.includes(path.extname(file)));
     
     let promises = files.map(name => new Promise((resolve, reject) => {
-      fs.readFile(`${dirname}/${name}`, 'utf-8', (err, content) => {
+      fs.readFile(`${dirname}${name}`, 'utf-8', (err, content) => {
         if (err) {
           onError(err);
           return;
         }
-        onFileContent(name, content);
+        onFileContent(`${dirname}${name}`, content);
         resolve();
       });
     }));
@@ -99,22 +99,34 @@ const readFiles = (dirname, onFileContent, onError) => new Promise((resolve, rej
 })
 
 const data = [];
+const moreData = [];
 readFiles(
   directory,
-  (filename, content) => data.push(content),
+  (filepath, content) => (data.push(content), moreData.push({ filepath, content })),
   (err) => { throw err }
 )
 .then(() => {
+  // test for a match differently based on flags set
   const testForWords = (content, word) => (
       regExp        ? !!content.match(word)
     : caseSensitive ? content.includes(word)
     : content.toLowerCase(word)
   )
 
+  // the function used by both our filter methods below
   const filterFn =
     word => data.reduce((acc, content) => acc ? acc : testForWords(content, word), false)
-  const foundWords = words.filter(filterFn)
-  const notFoundWords = words.filter(word => !filterFn(word))
-  console.log(`found instances of:`, foundWords);
-  console.log(`didn't find instances of:`, notFoundWords);
+  
+  const mapFn =
+    word => ({ word, foundIn : moreData.reduce((acc, { filepath, content }) => [...acc, ...(testForWords(content, word) ? [filepath] : [])], []) })
+
+  const foundIn = words
+  .map(mapFn)
+  .sort((a, b) => b.foundIn.length - a.foundIn.length);
+  // print output
+  console.log(`
+Results: ${ foundIn.map(({ word, foundIn }) => `
+  '${ word }' ${ foundIn.length > 0 ? 'found in files:' : 'not found'}
+    ${ foundIn }`).join('\n  ')}
+`)
 });
