@@ -12,6 +12,13 @@ const genericSingleArgProcessor = (args, flag) => {
   return result;
 }
 
+const multiArgNoFlag = args => {
+  const endIndex = args.reduce((acc, arg, i) => acc !== -1 ? acc : (arg.indexOf('-') === 0 ? i : -1), -1)
+  const result = args.slice(0, endIndex === -1 ? args.length : endIndex);
+  args.splice(0, result.length);
+  return result;
+}
+
 const genericMultiArgProcessor = (args, flag) => {
   const index = args.indexOf(flag);
   const endIndex = args.slice(index + 1).reduce((acc, arg, i) => acc !== -1 ? acc : (arg.indexOf('-') === 0 ? i : -1), -1)
@@ -21,6 +28,7 @@ const genericMultiArgProcessor = (args, flag) => {
 }
 
 module.exports = {
+  multiArgNoFlag,
   argProcessorFactory,
   genericSingleArgProcessor,
   genericMultiArgProcessor,

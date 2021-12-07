@@ -15,13 +15,13 @@ Clone this repository to a convenient location. This is recommended since you ma
 Finally, run it using `node`:
 
 ```
-$ node ./find-words <arguments>
+$ node ./find-words <directories/globs> <arguments>
 ```
 
 After cloning you may want to rename the folder to something convenient like `fw`, then you can run it like so:
 
 ```
-$ node ./fw <arguments>
+$ node ./fw <directories/globs> <arguments>
 ```
 
 So, say you have these folders:
@@ -31,18 +31,27 @@ projects
 |
 |- find-words
 |- some-project
+   |- sub-dir
+   |- another-sub-dir
+   |- yet-another-sub-dir
 ```
 
-If you want to search `some-project`, then `cd` into `some-project` and run:
+If you want to search all files in the root of `some-project`, then `cd` into `some-project` and run:
 
 ```
-$ node ../find-words <arguments>
+$ node ../find-words ./ <arguments>
+```
+
+If your terminal supports globs, then you can use them. Say you want to search all .txt files in `some-project` along with all sub-directories. `cd` into `some-project` and run:
+
+```
+$ node ../find-words ./**/*.txt <arguments>
 ```
 
 Another tip: Sometimes the output can get long. In that case, you may want to output it to a file.
 
 ```
-$ node ../find-words <arguments> > results
+$ node ../find-words <directories/globs> <arguments> > results
 $ cat results
 ```
 
@@ -57,11 +66,6 @@ It can be a hastle to use the arguments, so you may just want to modify the defa
 ```
 
 ```
--d directory-name
---directory directory-name
-
-  If no directory is specified it defaults to './'
-
 -w <list of words>
 -words <list of words>
 
@@ -83,17 +87,19 @@ If you want words to be interpreted as Regular Expressions
 -x
 --reg-exp
   * Note: do not include your own opening and closing slashed ('/') *
+  * Note: you may need to single quote your regex so your terminal doesn't execute it *
   * Note: the global flag will always be included *
 
 ```
 
-
 ### Examples
 
-```
-$ node ./index.js -d ./test/ -w sdfs hello world blah -e .txt .dat -i node_modules .git -r -c
+These are all run from the root of the `find-words` project directory
 
-  Searching: ./test/ (Recursively)
+```
+$ node ./index.js ./test/ -w sdfs hello world blah -e .txt .dat -i node_modules .git -r -c
+
+  Searching: ./test (Recursively)
   Only checking files with extensions: .txt, .dat
   Looking for words: sdfs, hello, world, blah (Case-Sensitive)
   Ignoring directories: node_modules, .git
@@ -111,14 +117,39 @@ Results:
 
   'blah' not found
 ```
+```
+$ node ./index.js ./test/**/*.dat -w 1 3
+
+  Searching: ./test/data.dat (Not Recursively)
+  Only checking files with extensions: all
+  Looking for words: 1, 3 (Case-Insensitive)
+  Ignoring directories: node_modules, .git
+
+
+Results:
+  '1' found in files:
+    ./test/data.dat
+
+  '3' found in files:
+    ./test/data.dat
+```
+```
+$ node ./index.js ./test/** ./test2/** -w '[0-9]' -x
+
+  Searching: ./test/data.dat,./test/empty-folder,./test/hello.txt,./test/hello2.txt,./test/node_modules,./test2/test.txt (Not Recursively)
+  Only checking files with extensions: all
+  Looking for patterns: /[0-9]/gi (Case-Insensitive)
+  Ignoring directories: node_modules, .git
+
+
+Results:
+  /[0-9]/gi found in files:
+    ./test2/test.txt
+    ./test/data.dat
+```
 
 ## ToDo
 
-* Support glob paths as alternative to directory (and extension?)
-  * -g --glob
-  * simple version: ./some/path/**/*.ext
-    * directory = /some/path, recursive, and limits extension
-  * Use <a href="https://github.com/isaacs/node-glob" target="_blank">node-glob</a>?
 * More things in test directory
 * More examples, specifically for atomic-scss
 * Modify so there is a core that can be used for a gulp/webpack plugin
