@@ -31,17 +31,17 @@ const defaultRegExp = false;
 // get the command line args
 let args = process.argv.slice(2);
 
-// get directory out of args
-let directory = processDirectory(args) || defaultDirectory;
+// process all our arguments
 let words = processWords(args) || defaultWords;
+let directory = processDirectory(args) || defaultDirectory;
 const extensions = processExtensions(args) || defaultExtensions;
 const ignores = processIgnores(args) || defaultIgnores;
 const recursive = processRecursive(args) || defaultRecursive;
 const caseSensitive = processCaseSensitive(args) || defaultCaseSensitive;
 const regExp = processRegExp(args) || defaultRegExp;
 
-// make sure there is a / at the end of the directory
-if (directory && directory[directory.length - 1] !== '/') directory += '/';
+if(directory[directory.length-1] === '/')
+  directory = directory.substr(0, directory.length-1)
 
 if(!caseSensitive)
   words = words.map(word => word.toLowerCase());
@@ -74,12 +74,12 @@ const readFiles = (dirname, onFileContent, onError) => new Promise((resolve, rej
       files = files.filter(file => extensions.includes(path.extname(file)));
     
     let promises = files.map(name => new Promise((resolve, reject) => {
-      fs.readFile(`${dirname}${name}`, 'utf-8', (err, content) => {
+      fs.readFile(`${dirname}/${name}`, 'utf-8', (err, content) => {
         if (err) {
           onError(err);
           return;
         }
-        onFileContent(`${dirname}${name}`, content);
+        onFileContent(`${dirname}/${name}`, content);
         resolve();
       });
     }));
@@ -99,10 +99,9 @@ const readFiles = (dirname, onFileContent, onError) => new Promise((resolve, rej
 })
 
 const data = [];
-const moreData = [];
 readFiles(
   directory,
-  (filepath, content) => (data.push(content), moreData.push({ filepath, content })),
+  (filepath, content) => data.push({ filepath, content }),
   (err) => { throw err }
 )
 .then(() => {
@@ -110,23 +109,25 @@ readFiles(
   const testForWords = (content, word) => (
       regExp        ? !!content.match(word)
     : caseSensitive ? content.includes(word)
-    : content.toLowerCase(word)
+    : content.toLowerCase().includes(word)
   )
 
-  // the function used by both our filter methods below
-  const filterFn =
-    word => data.reduce((acc, content) => acc ? acc : testForWords(content, word), false)
-  
+  // for mapping over all words
+  // searches in each file. If found in the file, adds it to the array
+  // string => { string, [ string ]}
   const mapFn =
-    word => ({ word, foundIn : moreData.reduce((acc, { filepath, content }) => [...acc, ...(testForWords(content, word) ? [filepath] : [])], []) })
+    word => ({
+      word,
+      foundIn : data.reduce((acc, { filepath, content }) => [...acc, ...(testForWords(content, word) ? [filepath] : [])], []),
+    })
 
-  const foundIn = words
+  const results = words
   .map(mapFn)
   .sort((a, b) => b.foundIn.length - a.foundIn.length);
   // print output
   console.log(`
-Results: ${ foundIn.map(({ word, foundIn }) => `
+Results: ${ results.map(({ word, foundIn }) => `
   '${ word }' ${ foundIn.length > 0 ? 'found in files:' : 'not found'}
-    ${ foundIn }`).join('\n  ')}
+    ${ foundIn.join('\n    ') }`).join('\n  ')}
 `)
 });
