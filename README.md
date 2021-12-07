@@ -113,4 +113,5 @@ Results:
 
 * Support glob paths
   * Write yourself? Use <a href="https://github.com/isaacs/node-glob" target="_blank">node-glob</a>?
+* Modify so there is a core that can be used for a gulp/webpack plugin
 

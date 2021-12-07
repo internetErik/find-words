@@ -52,7 +52,7 @@ if(regExp)
 console.log(`
   Searching: ${ directory } (${ recursive ? '' : 'Not '}Recursively)
   Only checking files with extensions: ${extensions.length > 0 ? extensions.join(', ') : 'all'}
-  Looking for words: ${ words.join(', ') } (Case-${ caseSensitive ? 'S' : 'Ins' }ensitive)
+  Looking for ${regExp ? 'patterns' : 'words' }: ${ words.join(', ') } (Case-${ caseSensitive ? 'S' : 'Ins' }ensitive)
   Ignoring directories: ${ignores.length > 0 ? ignores.join(', ') : 'none'}
 `);
 
@@ -127,7 +127,7 @@ readFiles(
   // print output
   console.log(`
 Results: ${ results.map(({ word, foundIn }) => `
-  '${ word }' ${ foundIn.length > 0 ? 'found in files:' : 'not found'}
+  ${ regExp ? word : `'${word}'` } ${ foundIn.length > 0 ? 'found in files:' : 'not found'}
     ${ foundIn.join('\n    ') }`).join('\n  ')}
 `)
 });
