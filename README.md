@@ -1,17 +1,17 @@
 # find-words
 
-Run this to search files in a directory (and sub-directories) with a list of words. It will respond with a which of those words were found and what files they were found in (also if they weren't found). You can use this information for whatever you want.
+Search files in directories or files (and sub-directories) with a list of words. It will respond with which what files contained these words (also if they weren't found).
 
-Who knows, maybe you don't know `grep` or just want something that can specifically do this with some convenient formatting without writing a script.
+Why? Maybe you don't know `grep` or just want something that can specifically do this with some convenient formatting without writing a script.
 
-I think of this as something to use with my <a href="https://github.com/internetErik/atomic-scss" target="_blank">atomic-scss</a> so I can find unused classes, however I wrote a different version of this to help someone answer the question, "is this static asset being used anywhere?"
+I use this when I'm using <a href="https://github.com/internetErik/atomic-scss" target="_blank">atomic-scss</a> so I can find unused classes that I can then delete from my config files.
 
 If you have any suggestions open an issue or make a pull request with the change.
 
 ## ToDo
 
 * Show line numbers where words show up in each file
-  * `<filename> [<line>, <line>]`
+  * format: `<filename> [<line>, <line>]`
   * split files on `\n` and search each line one at a time
 * Generate more examples (these should also be seen as tests)
 * Modify so there is a core that can be used for a `gulp`/`webpack` plugin
@@ -19,18 +19,10 @@ If you have any suggestions open an issue or make a pull request with the change
 
 ## Use
 
-Clone this repository to a convenient location. This is recommended since you may want to manually edit the default values. Setup any default values you may need 
-
-Finally, run it using `node`:
+`git clone` this repository to a convenient location, then run it using `node` (or as a shell script if you trust me and run `chmod +x index.mjs`). Here is the general format of the command:
 
 ```
-$ node ./find-words <directories/globs> <arguments>
-```
-
-After cloning you may want to rename the folder to something convenient like `fw`, then you can run it like so:
-
-```
-$ node ./fw <directories/globs> <arguments>
+$ node ./find-words <directories/files> <arguments>
 ```
 
 So, say you have these folders:
@@ -51,7 +43,7 @@ If you want to search all files in the root of `some-project`, then `cd` into `s
 $ node ../find-words ./ <arguments>
 ```
 
-If your shell supports globs (e.g., zsh), then you can use them. Say you want to search all .txt files in `some-project` along with all sub-directories. `cd` into `some-project` and run:
+If your shell supports globs (e.g., `zsh`), then you can use them. Say you want to search all .txt files in `some-project` along with all sub-directories. `cd` into `some-project` and run:
 
 ```
 $ node ../find-words ./**/*.txt <arguments>
@@ -60,7 +52,7 @@ $ node ../find-words ./**/*.txt <arguments>
 Another tip: Sometimes the output can get long. In that case, you may want to output it to a file.
 
 ```
-$ node ../find-words <directories/globs> <arguments> > results
+$ node ../find-words <directories/files> <arguments> > results
 $ cat results
 ```
 
